@@ -62,16 +62,6 @@
         </div>
     </div>
 
-    <script>
-        // Verifique periodicamente se a requisição foi feita pelo ESP32
-        setInterval(() => {
-            fetch('/api/cadastrar')
-                .then(response => response.json())
-                .then(data => {
-                    // Se o servidor responde, acione o alerta
-                    document.getElementById("cadastrando-msg").style.display = "block";
-                });
-        }, 1000);
-    </script>
+    <script src="Alunos.js"></script>
 </body>
 </html>
