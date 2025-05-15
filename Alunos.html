@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Alunos - Controle de Retirada</title>
+    <link rel="stylesheet" href="Index.css">
+</head>
+<body>
+    <div class="wrapper">
+        <!-- Barra de Navegação Lateral -->
+        <nav class="sidebar">
+            <h2>Controle de Retirada</h2>
+            <ul>
+                <li><a href="Salas.html">Salas</a></li>
+                <li><a href="Alunos.html">Alunos</a></li>
+                <li><a href="Configuracoes.html">Configurações</a></li>
+            </ul>
+        </nav>
+
+        <!-- Conteúdo Principal -->
+        <div class="content">
+            <header>
+                <h1>Alunos</h1>
+            </header>
+
+            <section class="alunos-section">
+                <h2>Lista de Alunos</h2>
+                
+                <!-- Tabela de Exemplo de Alunos -->
+                <!-- Começo da Tabela de Alunos -->
+                <table class="alunos-table">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Nome</th>
+                            <th>Matricula</th>
+                            <th>Status de Retirada</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>1</td>
+                            <td>João Silva</td>
+                            <td>2023001</td>
+                            <td>Retirou</td>
+                        </tr>
+                        <tr>
+                            <td>2</td>
+                            <td>Ana Souza</td>
+                            <td>2023002</td>
+                            <td>Devolveu</td>
+                        </tr>
+                        <tr>
+                            <td>3</td>
+                            <td>Pedro Oliveira</td>
+                            <td>2023003</td>
+                            <td>Retirou</td>
+                        </tr>
+                        <!-- Adicione mais alunos aqui -->
+                    </tbody>
+                </table>
+                <!-- Fim da Tabela de Alunos -->
+                <!-- Comentário: A tabela acima é um exemplo, você pode removê-la quando conectar com o backend. -->
+                
+            </section>
+
+            <section class="add-aluno-section">
+                <h2>Adicionar Novo Aluno</h2>
+                <form action="#" method="post">
+                    <label for="aluno-name">Nome do Aluno:</label>
+                    <input type="text" id="aluno-name" name="aluno-name" placeholder="Digite o nome do aluno" required>
+
+                    <label for="aluno-matricula">Matrícula:</label>
+                    <input type="text" id="aluno-matricula" name="aluno-matricula" placeholder="Digite a matrícula" required>
+
+                    <button type="submit" class="btn">Adicionar Aluno</button>
+                </form>
+            </section>
+        </div>
+    </div>
+</body>
+</html>

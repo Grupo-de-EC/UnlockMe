@@ -1,0 +1,419 @@
+/* Estilos Gerais */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f4f4f4;
+    display: flex;
+    min-height: 100vh;
+}
+
+/* Container Principal */
+.wrapper {
+    display: flex;
+    width: 100%;
+}
+
+/* Barra Lateral */
+.sidebar {
+    width: 250px;
+    background-color: #333;
+    color: #fff;
+    height: 100vh;
+    padding-top: 30px;
+    position: fixed;
+}
+
+.sidebar h2 {
+    text-align: center;
+    margin-bottom: 20px;
+    color: #fff;
+    font-size: 24px;
+}
+
+.sidebar ul {
+    list-style-type: none;
+    padding: 0;
+}
+
+.sidebar ul li {
+    margin: 15px 0;
+}
+
+.sidebar ul li a {
+    color: #fff;
+    text-decoration: none;
+    padding: 10px;
+    display: block;
+    font-size: 18px;
+    transition: background-color 0.3s ease;
+}
+
+.sidebar ul li a:hover {
+    background-color: #575757;
+}
+
+/* Conteúdo Principal */
+.content {
+    margin-left: 250px;
+    padding: 20px;
+    width: calc(100% - 250px);
+    background-color: #fff;
+}
+
+header {
+    background-color: #4CAF50;
+    color: white;
+    padding: 20px;
+    text-align: center;
+    border-radius: 5px;
+    margin-bottom: 20px;
+}
+
+h1 {
+    font-size: 28px;
+}
+
+.tab-content {
+    display: none;
+}
+
+#salas {
+    display: block;
+}
+
+h2 {
+    font-size: 24px;
+    margin-bottom: 20px;
+}
+
+.salas-list {
+    list-style-type: none;
+}
+
+.salas-list li {
+    margin: 10px 0;
+}
+
+.salas-list li a {
+    text-decoration: none;
+    color: #333;
+    font-size: 20px;
+    display: block;
+    padding: 8px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    transition: background-color 0.3s ease;
+}
+
+.salas-list li a:hover {
+    background-color: #4CAF50;
+    color: white;
+}
+
+/* Estilo da Tabela de Alunos */
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+}
+
+th, td {
+    padding: 12px;
+    text-align: left;
+    border: 1px solid #ddd;
+}
+
+th {
+    background-color: #f2f2f2;
+}
+
+/* Responsividade */
+@media screen and (max-width: 768px) {
+    .wrapper {
+        flex-direction: column;
+    }
+
+    .sidebar {
+        width: 100%;
+        height: auto;
+        position: relative;
+    }
+
+    .content {
+        margin-left: 0;
+        width: 100%;
+    }
+}
+
+/* Estilo para a página de configurações */
+.config-section {
+    margin-bottom: 30px;
+}
+
+.config-section h2 {
+    font-size: 24px;
+    margin-bottom: 15px;
+    color: #333;
+}
+
+.config-section form {
+    background-color: #f9f9f9;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.config-section form label {
+    display: block;
+    font-size: 16px;
+    margin-bottom: 8px;
+    color: #555;
+}
+
+.config-section form input[type="text"],
+.config-section form input[type="password"],
+.config-section form input[type="range"] {
+    width: 100%;
+    padding: 12px;
+    margin-bottom: 20px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 16px;
+    box-sizing: border-box;
+}
+
+.config-section form input[type="checkbox"] {
+    margin-right: 10px;
+}
+
+.config-section form .btn {
+    background-color: #4CAF50;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+    transition: background-color 0.3s;
+}
+
+.config-section form .btn:hover {
+    background-color: #45a049;
+}
+
+/* Estilo para o controle deslizante */
+.config-section form input[type="range"] {
+    width: 80%;
+    margin-top: 10px;
+    margin-bottom: 20px;
+}
+
+.config-section form #threshold-value {
+    font-size: 16px;
+    margin-left: 10px;
+}
+
+
+@media screen and (max-width: 768px) {
+    .wrapper {
+        flex-direction: column;
+    }
+
+    .sidebar {
+        width: 100%;
+        height: auto;
+    }
+
+    .content {
+        margin-left: 0;
+        width: 100%;
+    }
+
+    .config-section form input[type="text"],
+    .config-section form input[type="password"],
+    .config-section form input[type="range"] {
+        width: 100%;
+    }
+}
+
+/* Estilo para a tabela de alunos */
+.alunos-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+    background-color: #fff;
+}
+
+.alunos-table th, .alunos-table td {
+    padding: 12px;
+    text-align: left;
+    border: 1px solid #ddd;
+}
+
+.alunos-table th {
+    background-color: #4CAF50;
+    color: white;
+}
+
+.alunos-table tbody tr:nth-child(even) {
+    background-color: #f2f2f2;
+}
+
+.alunos-table tbody tr:hover {
+    background-color: #ddd;
+}
+
+/* Estilo para o formulário de adicionar aluno */
+.add-aluno-section form {
+    background-color: #f9f9f9;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.add-aluno-section form label {
+    display: block;
+    font-size: 16px;
+    margin-bottom: 8px;
+    color: #555;
+}
+
+.add-aluno-section form input[type="text"] {
+    width: 100%;
+    padding: 12px;
+    margin-bottom: 20px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 16px;
+    box-sizing: border-box;
+}
+
+.add-aluno-section form .btn {
+    background-color: #4CAF50;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+    transition: background-color 0.3s;
+}
+
+.add-aluno-section form .btn:hover {
+    background-color: #45a049;
+}
+
+@media screen and (max-width: 768px) {
+    .wrapper {
+        flex-direction: column;
+    }
+
+    .sidebar {
+        width: 100%;
+        height: auto;
+    }
+
+    .content {
+        margin-left: 0;
+        width: 100%;
+    }
+
+    .alunos-table th, .alunos-table td {
+        padding: 8px;
+    }
+}
+
+/* Estilo para a tabela de salas */
+.salas-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+    background-color: #fff;
+}
+
+.salas-table th, .salas-table td {
+    padding: 12px;
+    text-align: left;
+    border: 1px solid #ddd;
+}
+
+.salas-table th {
+    background-color: #4CAF50;
+    color: white;
+}
+
+.salas-table tbody tr:nth-child(even) {
+    background-color: #f2f2f2;
+}
+
+.salas-table tbody tr:hover {
+    background-color: #ddd;
+}
+
+/* Estilo para o formulário de adicionar sala */
+.add-sala-section form {
+    background-color: #f9f9f9;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.add-sala-section form label {
+    display: block;
+    font-size: 16px;
+    margin-bottom: 8px;
+    color: #555;
+}
+
+.add-sala-section form input[type="text"],
+.add-sala-section form input[type="number"],
+.add-sala-section form select {
+    width: 100%;
+    padding: 12px;
+    margin-bottom: 20px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 16px;
+    box-sizing: border-box;
+}
+
+.add-sala-section form .btn {
+    background-color: #4CAF50;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+    transition: background-color 0.3s;
+}
+
+.add-sala-section form .btn:hover {
+    background-color: #45a049;
+}
+
+/* Ajuste no layout para dispositivos móveis */
+@media screen and (max-width: 768px) {
+    .wrapper {
+        flex-direction: column;
+    }
+
+    .sidebar {
+        width: 100%;
+        height: auto;
+    }
+
+    .content {
+        margin-left: 0;
+        width: 100%;
+    }
+
+    .salas-table th, .salas-table td {
+        padding: 8px;
+    }
+}
