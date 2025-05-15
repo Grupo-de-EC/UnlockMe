@@ -3,33 +3,31 @@ const bodyParser = require('body-parser');
 const app = express();
 const port = 3000;
 
-let alunos = [
-    { id: 1, nome: 'Aluno 1', retirou: false, devolveu: false },
-    { id: 2, nome: 'Aluno 2', retirou: false, devolveu: false },
-];
+// Variável para sinalizar quando o ESP32 requisitar o cadastro
+let cadastrando = false;
 
+// Middleware
 app.use(bodyParser.json());
-app.use(express.static('public'));
+app.use(express.static('public')); // Serve arquivos estáticos da pasta public
 
-// API para pegar o checklist de alunos
-app.get('/api/checklist', (req, res) => {
-    res.json(alunos);
+// Requisição do ESP32 para iniciar o cadastro
+app.post('/api/cadastrar', (req, res) => {
+    console.log('ESP32 solicitou cadastro!');
+    cadastrando = true; // Ativa o alerta
+    res.status(200).send('Requisição de cadastro recebida.');
 });
 
-// API para atualizar o status de retirada ou devolução
-app.post('/api/update', (req, res) => {
-    const { alunoId, retirou, devolveu } = req.body;
-    const aluno = alunos.find(a => a.id === alunoId);
+// Endpoint para o frontend checar o status
+app.get('/api/status', (req, res) => {
+    res.json({ cadastrando });
 
-    if (aluno) {
-        aluno.retirou = retirou;
-        aluno.devolveu = devolveu;
-        res.status(200).send('Status atualizado');
-    } else {
-        res.status(404).send('Aluno não encontrado');
+    // Reseta a flag após o frontend pegar
+    if (cadastrando) {
+        cadastrando = false;
     }
 });
 
+// Inicia o servidor
 app.listen(port, () => {
-    console.log(`Servidor rodando na porta ${port}`);
+    console.log(`Servidor rodando em http://localhost:${port}`);
 });

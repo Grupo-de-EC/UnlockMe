@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Alunos - Controle de Retirada</title>
     <link rel="stylesheet" href="Index.css">
+    <script defer src="alunos.js"></script>
 </head>
 <body>
     <div class="wrapper">
@@ -24,12 +25,14 @@
                 <h1>Alunos</h1>
             </header>
 
+            <section>
+                <p id="cadastrando-msg" style="display:none; color: red; font-weight: bold;">
+                    Cadastrando...
+                </p>
+            </section>
             <section class="alunos-section">
                 <h2>Lista de Alunos</h2>
-                
-                <!-- Tabela de Exemplo de Alunos -->
-                <!-- Começo da Tabela de Alunos -->
-                <table class="alunos-table">
+                <table class="alunos-table" id="alunos-table">
                     <thead>
                         <tr>
                             <th>ID</th>
@@ -38,36 +41,14 @@
                             <th>Status de Retirada</th>
                         </tr>
                     </thead>
-                    <tbody>
-                        <tr>
-                            <td>1</td>
-                            <td>João Silva</td>
-                            <td>2023001</td>
-                            <td>Retirou</td>
-                        </tr>
-                        <tr>
-                            <td>2</td>
-                            <td>Ana Souza</td>
-                            <td>2023002</td>
-                            <td>Devolveu</td>
-                        </tr>
-                        <tr>
-                            <td>3</td>
-                            <td>Pedro Oliveira</td>
-                            <td>2023003</td>
-                            <td>Retirou</td>
-                        </tr>
-                        <!-- Adicione mais alunos aqui -->
+                    <tbody id="alunos-tbody">
                     </tbody>
                 </table>
-                <!-- Fim da Tabela de Alunos -->
-                <!-- Comentário: A tabela acima é um exemplo, você pode removê-la quando conectar com o backend. -->
-                
             </section>
 
             <section class="add-aluno-section">
                 <h2>Adicionar Novo Aluno</h2>
-                <form action="#" method="post">
+                <form id="add-aluno-form">
                     <label for="aluno-name">Nome do Aluno:</label>
                     <input type="text" id="aluno-name" name="aluno-name" placeholder="Digite o nome do aluno" required>
 
@@ -76,8 +57,21 @@
 
                     <button type="submit" class="btn">Adicionar Aluno</button>
                 </form>
+                <p id="cadastrando-msg" style="display:none;">Cadastrando...</p>
             </section>
         </div>
     </div>
+
+    <script>
+        // Verifique periodicamente se a requisição foi feita pelo ESP32
+        setInterval(() => {
+            fetch('/api/cadastrar')
+                .then(response => response.json())
+                .then(data => {
+                    // Se o servidor responde, acione o alerta
+                    document.getElementById("cadastrando-msg").style.display = "block";
+                });
+        }, 1000);
+    </script>
 </body>
 </html>

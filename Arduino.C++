@@ -1,61 +1,47 @@
 #include <WiFi.h>
 #include <HTTPClient.h>
-#include <Adafruit_Fingerprint.h>
 
-const char* ssid = "aaaaa";
-const char* password = "1234";
+// Defina sua rede Wi-Fi
+const char* ssid = "Seu_SSID";
+const char* password = "Sua_Senha";
 
-WiFiClient client;
-HTTPClient http;
-
-Adafruit_Fingerprint finger = Adafruit_Fingerprint(&Serial2);
+const int buttonPin = 12;  // Pin onde o botão está conectado
 
 void setup() {
   Serial.begin(115200);
-  Serial2.begin(57600, SERIAL_8N1, 16, 17);
-
   WiFi.begin(ssid, password);
+
   while (WiFi.status() != WL_CONNECTED) {
     delay(1000);
-    Serial.println("Conectando ao WiFi...");
+    Serial.println("Conectando à Wi-Fi...");
   }
-  Serial.println("Conectado ao WiFi!");
-
-  if (finger.begin()) {
-    Serial.println("Sensor de impressão digital encontrado!");
-  } else {
-    Serial.println("Não foi possível encontrar o sensor de impressão digital");
-    while (1);
-  }
+  Serial.println("Conectado à Wi-Fi!");
+  pinMode(buttonPin, INPUT_PULLUP);
 }
 
 void loop() {
-  int fingerprintID = getFingerprintID();
-  if (fingerprintID != -1) {
-    // Enviar dados para o servidor
-    String url = "http://Serv.com";
-    http.begin(client, url);
-    http.addHeader("Content-Type", "application/json");
-
-    String payload = "{\"alunoId\": " + String(fingerprintID) + ", \"retirou\": true, \"devolveu\": false}";
-    int httpCode = http.POST(payload);
-
-    if (httpCode > 0) {
-      String response = http.getString();
-      Serial.println(response);
-    } else {
-      Serial.println("Erro ao enviar dados");
-    }
-    http.end();
+  if (digitalRead(buttonPin) == LOW) {
+    sendHTTPRequest();
+    delay(1000);
   }
-  delay(5000);
 }
 
-int getFingerprintID() {
-  int fingerprintID = -1;
-  if (finger.getImage() != FINGERPRINT_OK) return -1;
-  if (finger.image2Tz() != FINGERPRINT_OK) return -1;
-  if (finger.fingerSearch() != FINGERPRINT_OK) return -1;
-  fingerprintID = finger.fingerID;
-  return fingerprintID;
+void sendHTTPRequest() {
+  HTTPClient http;
+  String url = "http://SEU_IP:3000/api/cadastrar"; // O URL do seu servidor Express
+
+  // Fazendo uma requisição POST
+  http.begin(url);
+  http.addHeader("Content-Type", "application/json");
+  
+  String payload = "{\"acao\": \"cadastrar\"}";
+  int httpResponseCode = http.POST(payload);
+
+  if (httpResponseCode > 0) {
+    Serial.println("Requisição enviada com sucesso");
+  } else {
+    Serial.println("Erro ao enviar requisição");
+  }
+
+  http.end();
 }
