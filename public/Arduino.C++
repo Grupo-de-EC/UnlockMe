@@ -28,7 +28,7 @@ void loop() {
 
 void sendHTTPRequest() {
   HTTPClient http;
-  String url = "http://SEU_IP:3000/api/cadastrar"; // O URL do seu servidor Express
+  String url = "http://192.168.x.x:3000/api/cadastrar";  // IP do seu computador na rede, O URL do seu servidor Express
 
   // Fazendo uma requisição POST
   http.begin(url);
