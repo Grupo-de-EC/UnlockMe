@@ -27,10 +27,6 @@
             <form id="formSala">
                 <input type="text" id="nome" placeholder="Nome da sala" required>
                 <input type="number" id="capacidade" placeholder="Capacidade" required>
-                <select id="status">
-                    <option value="Disponível">Disponível</option>
-                    <option value="Ocupada">Ocupada</option>
-                </select>
                 <button type="submit">Adicionar</button>
             </form>
 
@@ -41,7 +37,6 @@
                         <th>ID</th>
                         <th>Nome da Sala</th>
                         <th>Capacidade</th>
-                        <th>Status de Disponibilidade</th>
                     </tr>
                 </thead>
                 <tbody id="listaSalas">
@@ -52,7 +47,6 @@
                                 <td>{$row['id']}</td>
                                 <td>{$row['nome']}</td>
                                 <td>{$row['capacidade']}</td>
-                                <td>{$row['status']}</td>
                               </tr>";
                     }
                     ?>
@@ -62,6 +56,6 @@
     </div>
 </div>
 
-<script src="sala.js"></script>
+<script src="salas.js"></script>
 </body>
 </html>
