@@ -14,7 +14,6 @@ document.getElementById('formSala').addEventListener('submit', function (e) {
     .then(response => response.text())
     .then(data => {
         if (data === 'OK') {
-            window.location.reload();
             alert('Erro: ' + data);
         } else {
             window.location.reload();
