@@ -15,8 +15,9 @@ document.getElementById('formSala').addEventListener('submit', function (e) {
     .then(data => {
         if (data === 'OK') {
             window.location.reload();
+            alert('Erro: ' + data);
         } else {
-            alert('Erro ao adicionar sala: ' + data);
+            window.location.reload();
         }
     });
 });

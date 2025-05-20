@@ -90,46 +90,58 @@ h2 {
     font-size: 24px;
     margin-bottom: 20px;
 }
-
-.salas-list {
-    list-style-type: none;
-}
-
-.salas-list li {
+form input, form select, form button {
+    padding: 10px;
     margin: 10px 0;
-}
-
-.salas-list li a {
-    text-decoration: none;
-    color: #333;
-    font-size: 20px;
-    display: block;
-    padding: 8px;
-    border: 1px solid #ddd;
+    width: 100%;
+    font-size: 16px;
     border-radius: 5px;
-    transition: background-color 0.3s ease;
+    border: 1px solid #ddd;
 }
 
-.salas-list li a:hover {
-    background-color: #4CAF50;
+form input[type="text"], form input[type="number"], form select {
+    width: 48%;
+    display: inline-block;
+}
+
+form button {
+    width: 100%;
+    background-color: green;
     color: white;
+    border: none;
+    cursor: pointer;
+    font-size: 16px;
 }
 
-/* Estilo da Tabela de Alunos */
-table {
+form button:hover {
+    background-color: #45a049;
+}
+
+/* Estilo da Tabela de Salas */
+.salas-table {
     width: 100%;
     border-collapse: collapse;
     margin-top: 20px;
+    background-color: #fff;
 }
 
-th, td {
+.salas-table th, .salas-table td {
     padding: 12px;
     text-align: left;
     border: 1px solid #ddd;
 }
 
-th {
+.salas-table th {
+    background-color: #4CAF50;
+    color: white;
+}
+
+.salas-table tbody tr:nth-child(even) {
     background-color: #f2f2f2;
+}
+
+.salas-table tbody tr:hover {
+    background-color: #ddd;
 }
 
 /* Responsividade */
@@ -147,6 +159,14 @@ th {
     .content {
         margin-left: 0;
         width: 100%;
+    }
+
+    form input, form select, form button {
+        width: 100%;
+    }
+
+    .salas-table th, .salas-table td {
+        padding: 8px;
     }
 }
 
