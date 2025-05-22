@@ -13,7 +13,6 @@
         <h2>Controle de Retirada</h2>
         <ul>
             <li><a href="salas.php">Salas</a></li>
-            <li><a href="alunos.html">Alunos</a></li>
             <li><a href="configuracoes.html">Configurações</a></li>
         </ul>
     </nav>
@@ -34,7 +33,6 @@
             <table class="salas-table">
                 <thead>
                     <tr>
-                        <th>ID</th>
                         <th>Nome da Sala</th>
                         <th>Capacidade</th>
                     </tr>
@@ -44,13 +42,13 @@
                     $result = $conn->query("SELECT * FROM salas ORDER BY id DESC");
                     while($row = $result->fetch_assoc()) {
                         echo "<tr>
-                                <td>{$row['id']}</td>
-                                <td>{$row['nome']}</td>
+                                <td><a href='Alunos.php?sala_id={$row['id']}'>{$row['nome']}</a></td>
                                 <td>{$row['capacidade']}</td>
-                              </tr>";
+                            </tr>";
                     }
                     ?>
                 </tbody>
+
             </table>
         </section>
     </div>

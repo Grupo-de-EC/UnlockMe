@@ -1,3 +1,7 @@
+<?php
+include('db.php');
+$sala_id = isset($_GET['sala_id']) ? intval($_GET['sala_id']) : 0;
+?>
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
@@ -9,13 +13,11 @@
 </head>
 <body>
     <div class="wrapper">
-        <!-- Barra de Navegação Lateral -->
         <nav class="sidebar">
             <h2>Controle de Retirada</h2>
             <ul>
                 <li><a href="salas.php">Salas</a></li>
-                <li><a href="Alunos.html">Alunos</a></li>
-                <li><a href="Configuracoes.html">Configurações</a></li>
+                <li><a href="configuracoes.html">Configurações</a></li>
             </ul>
         </nav>
 
@@ -42,13 +44,29 @@
                         </tr>
                     </thead>
                     <tbody id="alunos-tbody">
+                        <?php
+                        $query = "SELECT * FROM alunos WHERE sala_id = $sala_id";
+                        $result = $conn->query($query);
+
+                        while ($row = $result->fetch_assoc()) {
+                            echo "<tr>
+                                    <td>{$row['id']}</td>
+                                    <td>{$row['nome']}</td>
+                                    <td>{$row['digital']}</td>
+                                    <td>{$row['status']}</td>
+                                </tr>";
+                        }
+                        ?>
                     </tbody>
+
                 </table>
             </section>
 
             <section class="add-aluno-section">
                 <h2>Adicionar Novo Aluno</h2>
                 <form id="add-aluno-form">
+                    <input type="hidden" id="sala-id" name="sala-id" value="<?php echo $sala_id; ?>">
+
                     <label for="aluno-name">Nome do Aluno:</label>
                     <input type="text" id="aluno-name" name="aluno-name" placeholder="Digite o nome do aluno" required>
 
@@ -62,6 +80,6 @@
         </div>
     </div>
 
-    <script src="Alunos.js"></script>
+    <script src="alunos.js"></script>
 </body>
 </html>

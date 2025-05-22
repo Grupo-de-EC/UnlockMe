@@ -25,3 +25,28 @@ setInterval(() => {
       })
       .catch(err => console.error('Erro ao checar status:', err));
   }, 2000);
+
+
+  document.addEventListener("DOMContentLoaded", () => {
+    const form = document.getElementById("add-aluno-form");
+
+    form.addEventListener("submit", async (e) => {
+        e.preventDefault();
+
+        const nome = document.getElementById("aluno-name").value;
+        const matricula = document.getElementById("aluno-matricula").value;
+        const salaId = document.getElementById("sala-id").value;
+
+        const formData = new FormData();
+        formData.append("nome", nome);
+        formData.append("matricula", matricula);
+        formData.append("sala_id", salaId);
+
+        await fetch("add_aluno.php", {
+            method: "POST",
+            body: formData
+        });
+
+        location.reload(); // Atualiza a página para mostrar o novo aluno
+    });
+});
