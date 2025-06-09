@@ -1,0 +1,14 @@
+AS608:
+
+RX - TX
+TX - RX
+U+ - 3v3
+GND - GND
+
+Display:
+
+GND - GND
+VDD - 3V3
+SCK - 22
+SDA - 21
+
