@@ -1,6 +1,18 @@
 <?php
 include('db.php');
+
+
 $sala_id = isset($_GET['sala_id']) ? intval($_GET['sala_id']) : 0;
+
+$codigo_sala = '';
+if ($sala_id > 0) {
+    $stmt = $conn->prepare("SELECT codigo FROM salas WHERE id = ?");
+    $stmt->bind_param("i", $sala_id);
+    $stmt->execute();
+    $stmt->bind_result($codigo_sala);
+    $stmt->fetch();
+    $stmt->close();
+}
 ?>
 <!DOCTYPE html>
 <html lang="pt-BR">
@@ -21,10 +33,9 @@ $sala_id = isset($_GET['sala_id']) ? intval($_GET['sala_id']) : 0;
             </ul>
         </nav>
 
-        <!-- Conteúdo Principal -->
         <div class="content">
             <header>
-                <h1>Alunos</h1>
+                <h1>Alunos da Sala</h1>
             </header>
 
             <section>
@@ -33,14 +44,13 @@ $sala_id = isset($_GET['sala_id']) ? intval($_GET['sala_id']) : 0;
                 </p>
             </section>
             <section class="alunos-section">
-                <h2>Lista de Alunos</h2>
+                <h2>Lista de Alunos<?php if ($codigo_sala): ?> - Código: <span style="font-weight: normal;"><?= htmlspecialchars($codigo_sala) ?></span><?php endif; ?></h2>
                 <table class="alunos-table" id="alunos-table">
                     <thead>
                         <tr>
-                            <th>ID</th>
                             <th>Nome</th>
-                            <th>Matricula</th>
-                            <th>Status de Retirada</th>
+                            <th>Numero do Computador</th>
+                            <th>Status</th>
                         </tr>
                     </thead>
                     <tbody id="alunos-tbody">
@@ -50,32 +60,14 @@ $sala_id = isset($_GET['sala_id']) ? intval($_GET['sala_id']) : 0;
 
                         while ($row = $result->fetch_assoc()) {
                             echo "<tr>
-                                    <td>{$row['id']}</td>
                                     <td>{$row['nome']}</td>
-                                    <td>{$row['digital']}</td>
+                                    <td>{$row['codigo_computador']}</td>
                                     <td>{$row['status']}</td>
                                 </tr>";
                         }
                         ?>
                     </tbody>
-
                 </table>
-            </section>
-
-            <section class="add-aluno-section">
-                <h2>Adicionar Novo Aluno</h2>
-                <form id="add-aluno-form">
-                    <input type="hidden" id="sala-id" name="sala-id" value="<?php echo $sala_id; ?>">
-
-                    <label for="aluno-name">Nome do Aluno:</label>
-                    <input type="text" id="aluno-name" name="aluno-name" placeholder="Digite o nome do aluno" required>
-
-                    <label for="aluno-matricula">Matrícula:</label>
-                    <input type="text" id="aluno-matricula" name="aluno-matricula" placeholder="Digite a matrícula" required>
-
-                    <button type="submit" class="btn">Adicionar Aluno</button>
-                </form>
-                <p id="cadastrando-msg" style="display:none;">Cadastrando...</p>
             </section>
         </div>
     </div>

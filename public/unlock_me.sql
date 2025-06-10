@@ -11,6 +11,7 @@ CREATE TABLE `salas` (
   `id` INT(11) NOT NULL AUTO_INCREMENT,
   `nome` VARCHAR(100) NOT NULL,
   `capacidade` VARCHAR(1000) NOT NULL,
+  `codigo` VARCHAR(6) NOT NULL UNIQUE,
   PRIMARY KEY (`id`),
   UNIQUE KEY `nome_unique` (`nome`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
@@ -31,7 +32,8 @@ CREATE TABLE `professores` (
 CREATE TABLE `alunos` (
   `id` INT(11) NOT NULL AUTO_INCREMENT,
   `nome` VARCHAR(100) NOT NULL,
-  `digital` VARCHAR(255) NOT NULL,
+  `senha` VARCHAR(50) NOT NULL,
+  `digital` VARCHAR(255), --NOT NULL,
   `status` ENUM('retirou','devolveu','nao pegou') NOT NULL,
   `horario_retirada` VARCHAR(255) DEFAULT NULL,
   `horario_devolucao` VARCHAR(255) DEFAULT NULL,
