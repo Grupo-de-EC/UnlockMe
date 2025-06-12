@@ -38,18 +38,19 @@
         }
         .login-container form button,
         .login-container .btn-cadastrar {
-            width: 100%;
-            padding: 12px;
+            width: 100%;            /* Mesma largura */
+            padding: 12px;          /* Mesma altura */
+            box-sizing: border-box; /* Importante para tamanho correto */
             border: none;
             border-radius: 5px;
             font-size: 16px;
             cursor: pointer;
             margin-bottom: 10px;
-            transition: background-color 0.3s ease;
+            color: white;
             display: block;
             text-align: center;
             text-decoration: none;
-            color: white;
+            transition: background-color 0.3s ease;
         }
         .login-container form button {
             background-color: #4CAF50;
