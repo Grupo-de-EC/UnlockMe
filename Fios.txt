@@ -11,4 +11,3 @@ GND - GND
 VDD - 3V3
 SCK - 22
 SDA - 21
-
