@@ -1,20 +1,19 @@
 <?php
 include('db.php');
-
 session_start();
+
 if ($_SESSION['user_role'] !== 'aluno') {
     die("Aluno não autenticado.");
 }
 
 $aluno_id = $_SESSION['user_id'];
-
-
+$mensagem = ""; // <- Variável para armazenar a mensagem
 
 if ($_SERVER["REQUEST_METHOD"] === "POST") {
     $codigoComputador = trim($_POST['codigo_computador']);
 
     if (empty($codigoComputador)) {
-        echo "Preencha o código do computador.";
+        $mensagem = "<p class='error-msg'>Preencha o código do computador.</p>";
     } else {
         $horario = date("Y-m-d H:i:s");
 
@@ -22,9 +21,9 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
         $stmt->bind_param("ssi", $codigoComputador, $horario, $aluno_id);
 
         if ($stmt->execute()) {
-            echo "<p style='color: green;'>Código registrado com sucesso!</p>";
+            $mensagem = "<p class='success-msg'>Código registrado com sucesso!</p>";
         } else {
-            echo "<p style='color: red;'>Erro ao registrar código: " . $stmt->error . "</p>";
+            $mensagem = "<p class='error-msg'>Erro ao registrar código: " . $stmt->error . "</p>";
         }
 
         $stmt->close();
@@ -37,7 +36,21 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
 <head>
     <meta charset="UTF-8">
     <title>Registro de Computador</title>
-    <link rel="stylesheet" href="formCadastroAluno.css"> <!-- Reaproveitando seu CSS anterior -->
+    <link rel="stylesheet" href="formCadastroAluno.css">
+    <style>
+        .success-msg {
+            color: green;
+            font-weight: bold;
+            text-align: center;
+            margin-top: 10px;
+        }
+        .error-msg {
+            color: red;
+            font-weight: bold;
+            text-align: center;
+            margin-top: 10px;
+        }
+    </style>
 </head>
 <body>
     <form method="POST">
@@ -47,6 +60,9 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
         <input type="text" name="codigo_computador" required><br><br>
 
         <input type="submit" value="Registrar Código">
+
+        <!-- Aqui vai a mensagem -->
+        <?php echo $mensagem; ?>
     </form>
 </body>
 </html>
