@@ -10,14 +10,12 @@ app.use(cors()); // Permite que o frontend acesse a API
 app.use(bodyParser.json());
 app.use(express.static('public'));
 
-// Endpoint que o ESP32 acessa
 app.post('/api/cadastrar', (req, res) => {
     console.log('ESP32 solicitou cadastro!');
     cadastrando = true;
     res.status(200).send('Requisição recebida');
 });
 
-// Endpoint que o frontend acessa
 app.get('/api/status', (req, res) => {
     res.json({ cadastrando });
     cadastrando = false;

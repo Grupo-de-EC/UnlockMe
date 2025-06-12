@@ -33,7 +33,7 @@ CREATE TABLE `alunos` (
   `id` INT(11) NOT NULL AUTO_INCREMENT,
   `nome` VARCHAR(100) NOT NULL,
   `senha` VARCHAR(50) NOT NULL,
-  `digital` VARCHAR(255), 
+  `digital` VARCHAR(255),
   `codigo_computador` INTEGER,
   `status` ENUM('retirou','devolveu','nao pegou') NOT NULL,
   `horario_retirada` VARCHAR(255) DEFAULT NULL,
