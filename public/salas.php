@@ -13,7 +13,6 @@
         <h2>Controle de Retirada</h2>
         <ul>
             <li><a href="salas.php">Salas</a></li>
-            <li><a href="configuracoes.html">Configurações</a></li>
         </ul>
     </nav>
 
