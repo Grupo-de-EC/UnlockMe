@@ -5,9 +5,25 @@ TX - RX
 U+ - 3v3
 GND - GND
 
-Display:
+DISPLAY:
 
 GND - GND
 VDD - 3V3
 SCK - 22
 SDA - 21
+
+BOTÕES:
+
+Botão Cadastro:
+
+OUT: D4
+
+Botão Analise:
+
+OUT: D23
+
+LED:
+
+Led_Verde: D18
+
+Led_Vermelho: D19
