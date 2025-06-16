@@ -7,7 +7,7 @@ SERIAL_PORT = 'COM3'  # Exemplo Windows, ou '/dev/ttyUSB0' no Linux/Mac
 BAUD_RATE = 115200
 
 # URL da API PHP que salva biometria
-API_URL = 'http://SEU_SERVIDOR/api/salvarBiometria.php'
+API_URL = 'http://localhost/api/salvarBiometria.php'
 
 def main():
     try:
