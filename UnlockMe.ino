@@ -15,13 +15,26 @@ HardwareSerial mySerial(2);
 Adafruit_Fingerprint finger = Adafruit_Fingerprint(&mySerial);
 uint8_t id;
 
-// ==== Função para mostrar mensagens ====
+// ==== Botões ====
+#define BOTAO_CAD_PIN 4
+#define BOTAO_ANA_PIN 23
+
+// ==== LEDs ====
+#define LED_VERDE 18
+#define LED_VERMELHO 19
+
+enum Estado { ESPERA, CADASTRO, ANALISE };
+Estado estadoAtual = ESPERA;
+
+unsigned long lastBotaoCadTime = 0;
+unsigned long lastBotaoAnaTime = 0;
+const unsigned long debounceDelay = 200;
+
 void showMessage(String message, int delayTime = 0) {
   Serial.println(message);
   display.clearDisplay();
   display.setTextSize(2);
   display.setTextColor(WHITE);
-
   int y = 0;
   int lineHeight = 16;
   int start = 0;
@@ -34,9 +47,14 @@ void showMessage(String message, int delayTime = 0) {
     y += lineHeight;
     start = end + 1;
   }
-
   display.display();
   if (delayTime > 0) delay(delayTime);
+}
+
+void esperarBotaoSolto(int pin) {
+  while (digitalRead(pin) == HIGH) {
+    delay(10);
+  }
 }
 
 void setup() {
@@ -44,147 +62,194 @@ void setup() {
   mySerial.begin(57600, SERIAL_8N1, 16, 17); // RX=16, TX=17
   delay(100);
 
-  // Inicializa o display
+  pinMode(BOTAO_CAD_PIN, INPUT_PULLDOWN);
+  pinMode(BOTAO_ANA_PIN, INPUT_PULLDOWN);
+  pinMode(LED_VERDE, OUTPUT);
+  pinMode(LED_VERMELHO, OUTPUT);
+  digitalWrite(LED_VERDE, LOW);
+  digitalWrite(LED_VERMELHO, LOW);
+
   if (!display.begin(SSD1306_SWITCHCAPVCC, 0x3C)) {
-    Serial.println("Falha ao iniciar o display OLED");
-    while (true);
+    Serial.println("Erro no display");
+    while (1);
   }
+
+    finger.getTemplateCount();
+  if (finger.templateCount == 0) {
+    showMessage("Sem\nDigitais", 2000);
+  } else {
+    showMessage("Digitais:\n" + String(finger.templateCount), 2000);
+  }
+
   display.clearDisplay();
   display.display();
-
   showMessage("Iniciando...", 1000);
 
-  // Inicializa o sensor biométrico
   finger.begin(57600);
   delay(5);
 
   if (finger.verifyPassword()) {
-    showMessage("Sensor\nConectado", 1000);
+    showMessage("Sensor\nOK", 1000);
   } else {
-    showMessage("Sensor\nNAO\nDetectado", 5000);
+    showMessage("Sensor\nErro", 5000);
     while (1);
   }
 
-  finger.getTemplateCount();
-  if (finger.templateCount == 0) {
-    showMessage("Nenhuma\ndigital\ncadastrada", 2000);
-  } else {
-    showMessage("Digitais\ncadastradas:\n" + String(finger.templateCount), 2000);
-  }
-
-  showMessage("Digite 1\nou 2 no\nSerial", 2000);
-}
-
-uint8_t readnumber() {
-  uint8_t num = 0;
-  while (num == 0) {
-    while (!Serial.available());
-    num = Serial.parseInt();
-  }
-  return num;
+  estadoAtual = ESPERA;
+  showMessage("Aperte:\nCadastro \nAnalise", 2000);
 }
 
 void loop() {
-  if (Serial.available() > 0) {
-    char comando = Serial.read();
+  static bool mostrouEspera = false;
+  unsigned long agora = millis();
 
-    if (comando == '1') {
+  if (digitalRead(BOTAO_CAD_PIN) == HIGH && (agora - lastBotaoCadTime > debounceDelay)) {
+    if (estadoAtual != CADASTRO) {
+      estadoAtual = CADASTRO;
+      mostrouEspera = false;
       showMessage("Modo\nCadastro", 1000);
-      Serial.println("Coloque o ID de 1 a 127...");
-      id = readnumber();
-      if (id == 0) {
-        showMessage("ID\nInvalido", 1000);
-        return;
-      }
-      showMessage("Cadastrando\nID: " + String(id), 1000);
-      while (!getFingerprintEnroll());
-      showMessage("Cadastro\nConcluido!", 2000);
-    } else if (comando == '2') {
-      showMessage("Modo\nAnalise", 1000);
-      showMessage("Coloque o\ndedo...", 2000);
-      int resultado = getFingerprintID();
-      if (resultado >= 1) {
-        showMessage("Digital\nValida", 2000);
-      } else {
-        showMessage("Digital\nInexistente", 2000);
-      }
-    } else {
-      showMessage("Comando\nInvalido", 1500);
+      esperarBotaoSolto(BOTAO_CAD_PIN);
     }
+    lastBotaoCadTime = agora;
+  }
 
-    Serial.println("Aguardando novo comando:");
-    showMessage("Digite 1\nou 2 no\nSerial", 2000);
+  if (digitalRead(BOTAO_ANA_PIN) == HIGH && (agora - lastBotaoAnaTime > debounceDelay)) {
+    if (estadoAtual != ANALISE) {
+      estadoAtual = ANALISE;
+      mostrouEspera = false;
+      showMessage("Modo\nAnalise", 1000);
+      esperarBotaoSolto(BOTAO_ANA_PIN);
+    }
+    lastBotaoAnaTime = agora;
+  }
+
+  switch (estadoAtual) {
+    case CADASTRO:
+      cadastrarDigital();
+      estadoAtual = ESPERA;
+      break;
+
+    case ANALISE:
+      analisarDigital();
+      estadoAtual = ESPERA;
+      break;
+
+    case ESPERA:
+    default:
+      if (!mostrouEspera) {
+        showMessage("Aperte:\nCadastro ou\nAnalise");
+        mostrouEspera = true;
+        digitalWrite(LED_VERDE, LOW);
+        digitalWrite(LED_VERMELHO, LOW);
+      }
+      break;
   }
 }
 
-// ==== Função de Cadastro ====
-uint8_t getFingerprintEnroll() {
+void cadastrarDigital() {
+  id = 1;
   int p = -1;
-  showMessage("Aguardando\ndedo...", 1000);
+
+  // Primeiro toque - colocar o dedo
+  showMessage("Coloque o\ndedo", 500);
+  digitalWrite(LED_VERDE, HIGH);
+  digitalWrite(LED_VERMELHO, LOW);
+
   while (p != FINGERPRINT_OK) {
     p = finger.getImage();
     if (p == FINGERPRINT_NOFINGER) {
       delay(100);
       continue;
-    } else if (p == FINGERPRINT_PACKETRECIEVEERR) {
-      showMessage("Erro de\ncomunicacao", 1000);
-      continue;
-    } else if (p == FINGERPRINT_IMAGEFAIL) {
-      showMessage("Erro na\nimagem", 1000);
+    }
+    if (p == FINGERPRINT_PACKETRECIEVEERR || p == FINGERPRINT_IMAGEFAIL) {
+      showMessage("Erro\nImagem", 1000);
       continue;
     }
   }
 
-  p = finger.image2Tz(1);
-  if (p != FINGERPRINT_OK) return p;
+  digitalWrite(LED_VERDE, LOW);
+  digitalWrite(LED_VERMELHO, HIGH); // Agora não deve colocar
 
-  showMessage("Remova\no dedo", 1500);
+  p = finger.image2Tz(1);
+  if (p != FINGERPRINT_OK) {
+    showMessage("Erro\nConverter.", 1000);
+    return;
+  }
+
+  showMessage("Remova o\ndedo", 1500);
   delay(2000);
   while (finger.getImage() != FINGERPRINT_NOFINGER);
 
-  showMessage("Coloque o\nmesmo dedo", 1500);
+  // Segundo toque - repetir dedo
+  showMessage("Mesmo dedo", 1000);
+  digitalWrite(LED_VERDE, HIGH);
+  digitalWrite(LED_VERMELHO, LOW);
+
   while (finger.getImage() != FINGERPRINT_OK);
+
+  digitalWrite(LED_VERDE, LOW);
+  digitalWrite(LED_VERMELHO, HIGH); // Não deve tocar agora
+
   p = finger.image2Tz(2);
-  if (p != FINGERPRINT_OK) return p;
+  if (p != FINGERPRINT_OK) {
+    showMessage("Erro\n2ª Img", 1000);
+    return;
+  }
 
   p = finger.createModel();
-  if (p != FINGERPRINT_OK) return p;
+  if (p != FINGERPRINT_OK) {
+    showMessage("Erro\nModelo", 1000);
+    return;
+  }
 
   p = finger.storeModel(id);
-  return (p == FINGERPRINT_OK);
+  if (p == FINGERPRINT_OK) {
+    showMessage("Cadastro\nFeito!", 2000);
+  } else {
+    showMessage("Erro ao\nsalvar", 2000);
+  }
+
+  digitalWrite(LED_VERDE, LOW);
+  digitalWrite(LED_VERMELHO, LOW);
 }
 
-// ==== Função de Análise ====
-uint8_t getFingerprintID() {
-  Serial.println("Iniciando análise...");
+void analisarDigital() {
+  int p = -1;
+
+  showMessage("Coloque o\ndedo", 1000);
+  digitalWrite(LED_VERDE, HIGH);
+  digitalWrite(LED_VERMELHO, LOW);
+
   int tentativas = 50;
-  uint8_t p = 0;
   while (tentativas--) {
     p = finger.getImage();
     if (p == FINGERPRINT_OK) break;
     delay(100);
   }
 
+  digitalWrite(LED_VERDE, LOW);
+  digitalWrite(LED_VERMELHO, HIGH); // Agora não deve mais tocar
+
   if (p != FINGERPRINT_OK) {
-    Serial.println("Falha ao capturar imagem.");
-    return 0;
+    showMessage("Erro ao\nler dedo", 2000);
+    return;
   }
 
   p = finger.image2Tz();
   if (p != FINGERPRINT_OK) {
-    Serial.println("Falha ao converter imagem.");
-    return 0;
+    showMessage("Erro\nConversao", 2000);
+    return;
   }
 
   p = finger.fingerSearch();
   if (p == FINGERPRINT_OK) {
-    Serial.print("ID Encontrado: ");
-    Serial.print(finger.fingerID);
-    Serial.print(" | Confiança: ");
-    Serial.println(finger.confidence);
-    return finger.fingerID;
+    showMessage("Digital\nValida", 2000);
+    Serial.print("ID: ");
+    Serial.println(finger.fingerID);
   } else {
-    Serial.println("Digital não encontrada.");
-    return 0;
+    showMessage("Nao\nReconhecida", 2000);
   }
+
+  digitalWrite(LED_VERDE, LOW);
+  digitalWrite(LED_VERMELHO, LOW);
 }
