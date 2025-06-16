@@ -16,7 +16,7 @@ $stmt->fetch();
 $stmt->close();
 
 if ($digital) {
-    echo json_encode(['status' => 'ok', 'biometria' => $digital]);
+    echo json_encode(['status' => 'ok', 'digital' => $digital]);
 } else {
     echo json_encode(['status' => 'pendente']);
 }
