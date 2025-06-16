@@ -16,7 +16,7 @@ time.sleep(2)  # Tempo para estabilizar conexão
 # === LIMPA QUALQUER DADO ANTERIOR ===
 ser.flushInput()
 
-print("📡 Aguardando dados do ESP32...\n")
+print("Aguardando dados do ESP32...\n")
 
 while True:
     try:
@@ -26,17 +26,17 @@ while True:
             
             if linha.startswith("DIGITAL_CADASTRADA_ID:"):
                 id_digital = linha.split(":")[1].strip()
-                print(f"📤 Enviando ID {id_digital} para o servidor...")
+                print(f"Enviando ID {id_digital} para o servidor...")
 
                 # Envia o ID para o PHP
                 try:
                     response = requests.post(URL_API, data={"id": id_digital})
-                    print(f"✅ Resposta do servidor: {response.status_code} - {response.text}")
+                    print(f"Resposta do servidor: {response.status_code} - {response.text}")
                 except requests.RequestException as e:
-                    print(f"❌ Erro ao enviar para o servidor: {e}")
+                    print(f"Erro ao enviar para o servidor: {e}")
 
     except KeyboardInterrupt:
-        print("\n🛑 Encerrando leitura serial.")
+        print("\nEncerrando leitura serial.")
         break
     except Exception as e:
-        print(f"⚠️ Erro inesperado: {e}")
+        print(f"Erro inesperado: {e}")
