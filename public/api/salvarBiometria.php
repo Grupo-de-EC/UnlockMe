@@ -1,22 +1,20 @@
 <?php
-include('../db.php');  // ajuste caminho se necessário
+include('../db.php');  // ajuste se necessário
 header('Content-Type: application/json');
 
-$data = json_decode(file_get_contents('php://input'), true);
-$aluno_id = $data['aluno_id'] ?? null;
-$template = $data['template'] ?? null;
+$id = $_POST['id'] ?? null;
 
-if (!$aluno_id || !$template) {
-    echo json_encode(['status' => 'erro', 'mensagem' => 'Dados incompletos']);
+if (!$id) {
+    echo json_encode(['status' => 'erro', 'mensagem' => 'ID não fornecido']);
     exit;
 }
 
-// Atualiza o template biométrico (campo digital) e status na tabela alunos
-$stmt = $conn->prepare("UPDATE alunos SET digital = ?, status = 'pegou' WHERE id = ?");
-$stmt->bind_param("si", $template, $aluno_id);
+// Atualiza o status para indicar que foi recebida a digital (opcional)
+$stmt = $conn->prepare("UPDATE alunos SET status = 'digital_cadastrada' WHERE id = ?");
+$stmt->bind_param("i", $id);
 
 if ($stmt->execute()) {
-    echo json_encode(['status' => 'ok']);
+    echo json_encode(['status' => 'ok', 'mensagem' => 'Biometria recebida com sucesso']);
 } else {
     echo json_encode(['status' => 'erro', 'mensagem' => $stmt->error]);
 }
