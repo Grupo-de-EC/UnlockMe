@@ -2,74 +2,47 @@ import serial
 import requests
 import time
 
-# Configure a porta serial do ESP32
-SERIAL_PORT = 'COM3'  # Exemplo Windows, ou '/dev/ttyUSB0' no Linux/Mac
-BAUD_RATE = 115200
+# Configura a porta serial e a velocidade
+ser = serial.Serial('COM6', 115200, timeout=1)  # Altere COM4 se necessário
+time.sleep(2)
 
-# URL da API PHP que salva biometria
-API_URL = 'http://localhost/api/salvarBiometria.php'
-
-def main():
+def obter_ultimo_aluno_id():
     try:
-        ser = serial.Serial(SERIAL_PORT, BAUD_RATE, timeout=1)
-        print(f'Conectado à porta serial {SERIAL_PORT}')
+        resp = requests.get("http://localhost/api/biometria.php")
+        if resp.status_code == 200:
+            dados = resp.json()
+            return dados.get("aluno_id")
     except Exception as e:
-        print(f'Erro ao abrir porta serial: {e}')
-        return
+        print(f"[Erro ao buscar aluno] {e}")
+    return None
 
-    buffer = []
-    lendo_template = False
+while True:
+    try:
+        # Corrigido: ignora erros de caracteres inválidos
+        linha = ser.readline().decode('utf-8', errors='ignore').strip()
 
-    while True:
-        try:
-            linha = ser.readline().decode('utf-8').strip()
-            if not linha:
-                continue
+        if not linha:
+            continue
 
-            print(f'Recebido: {linha}')
+        print(f"[Recebido] {linha}")
 
-            if linha == "INICIO_TEMPLATE":
-                buffer = []
-                lendo_template = True
-            elif linha == "FIM_TEMPLATE":
-                lendo_template = False
+        if linha.startswith("BIOMETRIA_ID:"):
+            digital = linha.split(":")[1].strip()
+            aluno_id = obter_ultimo_aluno_id()
 
-                aluno_id = None
-                template = None
+            if aluno_id and biometria_id:
+                payload = {
+                    "aluno_id": aluno_id,
+                    "digital": digital
+                }
 
-                for bline in buffer:
-                    if bline.startswith("ALUNO_ID:"):
-                        aluno_id = bline.split(":",1)[1].strip()
-                    elif bline.startswith("TEMPLATE:"):
-                        template = bline.split(":",1)[1].strip()
+                resp = requests.post("http://localhost/registrar_digital.php", json=payload)
 
-                if aluno_id and template:
-                    print(f'Enviando biometria do aluno {aluno_id} para o servidor...')
-                    resp = requests.post(API_URL, json={
-                        'aluno_id': aluno_id,
-                        'template': template
-                    })
-                    if resp.status_code == 200:
-                        resposta = resp.json()
-                        if resposta.get('status') == 'ok':
-                            ser.write(b'SALVAR\n')
-                            print('Resposta OK, enviado SALVAR para ESP32')
-                        else:
-                            ser.write(b'DESCARTAR\n')
-                            print(f'Erro no servidor: {resposta.get("mensagem")}')
-                    else:
-                        ser.write(b'DESCARTAR\n')
-                        print(f'Erro HTTP: {resp.status_code}')
+                if resp.status_code == 200:
+                    print("[Sucesso] Biometria enviada com sucesso.")
+                    print(resp.text)
                 else:
-                    ser.write(b'DESCARTAR\n')
-                    print('Dados incompletos para envio, descartando.')
+                    print(f"[Erro HTTP {resp.status_code}] {resp.text}")
 
-            elif lendo_template:
-                buffer.append(linha)
-
-        except Exception as e:
-            print(f'Erro no loop: {e}')
-            time.sleep(1)
-
-if __name__ == "__main__":
-    main()
+    except Exception as e:
+        print(f"[Erro geral] {e}")
