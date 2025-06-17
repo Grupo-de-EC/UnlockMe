@@ -2,41 +2,58 @@ import serial
 import requests
 import time
 
-# === CONFIGURAÇÕES ===
-PORTA_SERIAL = 'COM6'        # Altere para a porta correta do seu ESP32
+# Configurações
+PORTA_SERIAL = 'COM6'
 VELOCIDADE = 115200
-URL_API = 'http://localhost/UnlockMe/public/api/salvarBiometria.php'
+API_CADASTRO = 'http://localhost/UnlockMe/public/api/addAluno.php'
+API_BIOMETRIA = 'http://localhost/UnlockMe/public/api/registrar_Biometria.php'
 
-# === ABRIR SERIAL SEM RESETAR O ESP32 ===
+# Dados do aluno a serem cadastrados
+dados_aluno = {
+    "nome": "João",
+    "senha": "1234",
+    "codigo": "sala001"
+}
+
+# Cadastrar aluno e obter ID
+res = requests.post(API_CADASTRO, json=dados_aluno)
+resposta = res.json()
+
+if resposta['status'] != 'aguardando_biometria':
+    print("Erro ao cadastrar aluno:", resposta['mensagem'])
+    exit()
+
+aluno_id = resposta['aluno_id']
+print("ID do aluno:", aluno_id)
+
+# Aguardar digital do ESP32
 ser = serial.Serial(PORTA_SERIAL, VELOCIDADE, timeout=1)
 ser.dtr = False
 ser.rts = False
-time.sleep(2)  # Tempo para estabilizar conexão
-
-# === LIMPA QUALQUER DADO ANTERIOR ===
+time.sleep(2)
 ser.flushInput()
 
-print("Aguardando dados do ESP32...\n")
+print("Aguardando digital...")
+
+template_recebido = ""
 
 while True:
-    try:
-        linha = ser.readline().decode('utf-8', errors='ignore').strip()
-        if linha:
-            print(f"[Recebido] {linha}")
-            
-            if linha.startswith("DIGITAL_CADASTRADA_ID:"):
-                id_digital = linha.split(":")[1].strip()
-                print(f"Enviando ID {id_digital} para o servidor...")
+    linha = ser.readline().decode('utf-8', errors='ignore').strip()
+    if linha:
+        print(f"[ESP32] {linha}")
 
-                # Envia o ID para o PHP
-                try:
-                    response = requests.post(URL_API, data={"id": id_digital})
-                    print(f"Resposta do servidor: {response.status_code} - {response.text}")
-                except requests.RequestException as e:
-                    print(f"Erro ao enviar para o servidor: {e}")
+        if linha == "INICIO_TEMPLATE":
+            template_recebido = ""
+        elif linha == "FIM_TEMPLATE":
+            break
+        else:
+            template_recebido += linha
 
-    except KeyboardInterrupt:
-        print("\nEncerrando leitura serial.")
-        break
-    except Exception as e:
-        print(f"Erro inesperado: {e}")
+# Enviar para o backend
+dados_biometria = {
+    "aluno_id": aluno_id,
+    "biometria_id": template_recebido
+}
+
+res_bio = requests.post(API_BIOMETRIA, json=dados_biometria)
+print("Resposta ao salvar biometria:", res_bio.text)
