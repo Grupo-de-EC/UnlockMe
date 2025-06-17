@@ -5,8 +5,8 @@ import time
 # Configurações
 PORTA_SERIAL = 'COM6'
 VELOCIDADE = 115200
-API_CADASTRO = 'http://localhost/UnlockMe/public/api/addAluno.php'
-API_BIOMETRIA = 'http://localhost/UnlockMe/public/api/registrar_Biometria.php'
+API_CADASTRO = 'http://localhost/UnlockMe/public/addAluno.php'
+API_BIOMETRIA = 'http://localhost/UnlockMe/public/api/registrar_digital.php'
 
 # Dados do aluno a serem cadastrados
 ser = serial.Serial(PORTA_SERIAL, VELOCIDADE, timeout=1)
