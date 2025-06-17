@@ -129,6 +129,27 @@ void loop() {
 }
 
 void cadastrarDigital() {
+  String idRecebido = "";
+
+  // Aguarda o ID do aluno enviado via Serial (ex: ALUNO_ID:123)
+  showMessage("Esperando\nID...", 500);
+  unsigned long inicio = millis();
+  while (millis() - inicio < 10000) {
+    if (Serial.available()) {
+      idRecebido = Serial.readStringUntil('\n');
+      idRecebido.trim();
+      if (idRecebido.startsWith("ALUNO_ID:")) {
+        idRecebido = idRecebido.substring(9);
+        break;
+      }
+    }
+  }
+
+  if (idRecebido == "") {
+    showMessage("ID invalido", 2000);
+    return;
+  }
+
   showMessage("Coloque o\ndedo", 500);
   digitalWrite(LED_VERDE, HIGH);
 
@@ -181,21 +202,14 @@ void cadastrarDigital() {
     return;
   }
 
-  // ENVIO DO TEMPLATE (alteração mínima para funcionar corretamente)
+  // Prepara envio do template para o Python
   Serial.println("INICIO_TEMPLATE");
-  Serial.println("ALUNO_ID:123"); // Aqui você pode substituir para gerar o ID real do aluno
+  Serial.println("ALUNO_ID:" + idRecebido); // Envia ID do aluno
 
-  // Pega o template do buffer 1
-  uint8_t templateBuffer[512];
-  uint16_t length = finger.getTemplateCount(); // Não é usado para tamanho, só para controle, substituí para comprimento correto
-  // Para pegar o template, usamos getModel() sem argumentos e depois getTemplate()
-  p = finger.getModel();  // esta função carrega o modelo no sensor - sem parâmetros!
+  p = finger.getModel(); // Gera o modelo no buffer
   if (p != FINGERPRINT_OK) {
     Serial.println("TEMPLATE:ERRO");
   } else {
-    // Pega o template de buffer 1 (usando função da biblioteca)
-    // A biblioteca Adafruit_Fingerprint não expõe getTemplate diretamente
-    // Então aqui enviamos o template do buffer 1 em hexadecimal
     for (int i = 0; i < 512; i++) {
       Serial.print(finger.templateBuffer1[i], HEX);
       if (i < 511) Serial.print(",");
@@ -205,12 +219,13 @@ void cadastrarDigital() {
 
   Serial.println("FIM_TEMPLATE");
 
-  // Aguardar resposta do Python (ou outro sistema)
+  // Aguarda comando do Python: SALVAR ou DESCARTAR
   unsigned long tempoEspera = millis();
-  while (millis() - tempoEspera < 10000) { // espera 10 segundos
+  while (millis() - tempoEspera < 10000) {
     if (Serial.available()) {
       String comando = Serial.readStringUntil('\n');
       comando.trim();
+
       if (comando == "SALVAR") {
         id = finger.templateCount + 1;
         p = finger.storeModel(id);
@@ -230,6 +245,7 @@ void cadastrarDigital() {
   digitalWrite(LED_VERDE, LOW);
   digitalWrite(LED_VERMELHO, LOW);
 }
+
 
 void analisarDigital() {
   int p = -1;
