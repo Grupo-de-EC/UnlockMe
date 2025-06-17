@@ -9,12 +9,16 @@ API_CADASTRO = 'http://localhost/UnlockMe/public/api/addAluno.php'
 API_BIOMETRIA = 'http://localhost/UnlockMe/public/api/registrar_Biometria.php'
 
 # Dados do aluno a serem cadastrados
-dados_aluno = {
-    "nome": "João",
-    "senha": "1234",
-    "codigo": "sala001"
-}
+ser = serial.Serial(PORTA_SERIAL, VELOCIDADE, timeout=1)
+ser.dtr = False
+ser.rts = False
+time.sleep(2)
+ser.flushInput()
 
+# Envia o ID do aluno para o ESP32
+ser.write(f"ALUNO_ID:{aluno_id}\n".encode())
+
+print("Aguardando digital...")
 # Cadastrar aluno e obter ID
 res = requests.post(API_CADASTRO, json=dados_aluno)
 resposta = res.json()
